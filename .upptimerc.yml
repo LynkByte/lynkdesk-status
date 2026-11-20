@@ -7,7 +7,8 @@ sites:
   - name: Web app
     url: https://app.lynkbyte.com/up
   - name: API
-    url: https://api.lynkbyte.com/api/health
+    url: https://httpbin.org/delay/3
+    maxResponseTime: 1000
   - name: Database and cache
     url: https://app.lynkbyte.com/health/deep
 
