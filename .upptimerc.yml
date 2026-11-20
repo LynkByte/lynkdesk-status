@@ -13,9 +13,13 @@ sites:
 
 status-website:
   cname: status.lynkbyte.com
-  name: LynkDesk Status
-  introTitle: "LynkDesk service status"
-  introMessage: "Live availability for the LynkDesk website, web app and API."
+  name: LynkByte Status
+  logoUrl: https://status.lynkbyte.com/logo-192.png
+  favicon: https://status.lynkbyte.com/logo-192.png
+  faviconSvg: https://status.lynkbyte.com/favicon.svg
+  themeUrl: https://status.lynkbyte.com/theme.css
+  introTitle: "LynkByte service status"
+  introMessage: "Live availability for the LynkByte website, web app, API and database."
   navbar:
-    - title: LynkDesk
+    - title: LynkByte
       href: https://lynkbyte.com

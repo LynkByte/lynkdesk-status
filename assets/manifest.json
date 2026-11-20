@@ -1,0 +1,14 @@
+{
+  "name": "LynkByte Status",
+  "short_name": "LynkByte Status",
+  "description": "Live availability for LynkByte: sign in, billing, the web app and the Android app.",
+  "background_color": "#FBF8F3",
+  "theme_color": "#312E32",
+  "display": "minimal-ui",
+  "start_url": "/",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/logo-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
