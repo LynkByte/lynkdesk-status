@@ -238,7 +238,6 @@ function $(id){return document.getElementById(id);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function safeUrl(u){return /^https:\/\/github\.com\//.test(String(u||''))?u:'https://github.com/LynkByte/lynkdesk-status/issues';}
 function has(arr,v){return arr.indexOf(v)>-1;}
-function byNewest(a,b){return new Date(b.created_at).getTime()-new Date(a.created_at).getTime();}
 
 function parseYml(text){
   var out={};
@@ -552,7 +551,11 @@ function renderIncident(){
     }
     return;
   }
-  var open=state.issues.filter(function(i){return isStatus(i)&&i.state==='open'&&issueSlugs(i).length;}).sort(byNewest)[0];
+  var open=state.issues.filter(function(i){return isStatus(i)&&i.state==='open'&&issueSlugs(i).length;}).sort(function(a,b){
+    var da=isDegraded(a)?1:0,db=isDegraded(b)?1:0;
+    if(da!==db) return da-db;
+    return new Date(b.created_at)-new Date(a.created_at);
+  })[0];
   var maint=activeMaintList()[0];
   if(open) return renderOpenIncident(open);
   if(maint) return renderMaint(maint);
