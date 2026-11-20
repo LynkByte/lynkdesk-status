@@ -41,17 +41,19 @@
     "icon": "https://icons.duckduckgo.com/ip3/httpbin.org.ico",
     "slug": "api",
     "status": "degraded",
-    "uptime": "100.00%",
-    "uptimeDay": "100.00%",
-    "uptimeWeek": "100.00%",
-    "uptimeMonth": "100.00%",
-    "uptimeYear": "100.00%",
+    "uptime": "99.96%",
+    "uptimeDay": "99.96%",
+    "uptimeWeek": "99.96%",
+    "uptimeMonth": "99.96%",
+    "uptimeYear": "99.96%",
     "time": 858,
     "timeDay": 858,
     "timeWeek": 858,
     "timeMonth": 858,
     "timeYear": 858,
-    "dailyMinutesDown": {}
+    "dailyMinutesDown": {
+      "2026-11-20": 0
+    }
   },
   {
     "name": "Database and cache",
