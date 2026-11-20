@@ -158,8 +158,10 @@ function load(){
 var theme=$('theme');
 if(theme) theme.addEventListener('click',function(){
   var root=document.documentElement;
-  var dark=root.getAttribute('data-theme')?root.getAttribute('data-theme')==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
-  root.setAttribute('data-theme',dark?'light':'dark');
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);
+  var meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content',next==='dark'?'#17141B':'#FBF8F3');
 });
 
 if('serviceWorker' in navigator){
