@@ -207,8 +207,6 @@ var ISSUE_CACHE_KEY='lynkbyte-status-issues-v1';
 var ISSUE_CACHE_MS=5*60*1000;
 var RUN_CACHE_KEY='lynkbyte-status-lastrun-v1';
 var RUN_CACHE_MS=2*60*1000;
-var RELEASE_CACHE_KEY='lynkbyte-status-release-v1';
-var RELEASE_CACHE_MS=30*60*1000;
 var PREVIEW=(function(){var v=new URLSearchParams(location.search).get('preview');return ['ok','deg','out','mnt'].indexOf(v)>-1?v:null;})();
 
 var LAB={ok:'Working',deg:'Slower than usual',out:'Not working',mnt:'Maintenance',none:'Not tracked yet'};
@@ -228,7 +226,7 @@ var DEMO={
   mnt:{hero:['Planned maintenance is under way.','Some services are briefly unavailable. Your data is safe.'],title:'Database upgrade',who:'The web app and API, for about 30 minutes',do:'If you’re already signed in, you can keep working.',we:'We’re upgrading the database to make everything faster. No data is lost.',updates:[['In progress','Some services are briefly unavailable.','10:00'],['Scheduled','Planned window: 10:00 to 10:30 today.','Announced 17 Nov']]}
 };
 
-var state={sites:{},summary:[],issues:[],issuesOk:false,maint:[],events:[],trackingStart:0,lastCheck:0,lastChange:0,release:'',loaded:false,failed:false,comments:{}};
+var state={sites:{},summary:[],issues:[],issuesOk:false,maint:[],events:[],trackingStart:0,lastCheck:0,lastChange:0,versions:{},loaded:false,failed:false,comments:{}};
 
 function $(id){return document.getElementById(id);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -278,19 +276,6 @@ function getLastRun(){
       return ts;
     })
     .catch(function(){return cached?cached.ts:null;});
-}
-function getRelease(){
-  var cached=null;
-  try{cached=JSON.parse(localStorage.getItem(RELEASE_CACHE_KEY)||'null');}catch(e){}
-  if(cached&&Date.now()-cached.t<RELEASE_CACHE_MS) return Promise.resolve(cached);
-  return fetch('https://api.github.com/repos/LynkByte/lynkdesk-web/releases/latest',{cache:'no-store',headers:{Accept:'application/vnd.github+json'}})
-    .then(function(r){if(!r.ok) throw new Error('Release returned '+r.status);return r.json();})
-    .then(function(d){
-      var data={t:Date.now(),tag:d&&d.tag_name?d.tag_name:'',published:d&&d.published_at?d.published_at:''};
-      try{localStorage.setItem(RELEASE_CACHE_KEY,JSON.stringify(data));}catch(e){}
-      return data;
-    })
-    .catch(function(){return cached;});
 }
 
 function norm(s){return s==='up'?'ok':s==='degraded'?'deg':s==='down'?'out':s==='mnt'?'mnt':'none';}
@@ -453,8 +438,9 @@ function renderChecks(){
     var age=site&&site.lastUpdated?'status since '+rel(new Date(site.lastUpdated).getTime()):'';
     var text=st==='none'?'No data yet':LAB[st];
     var hasVersion=s.slug==='web-app'||s.slug==='api';
-    var ver=hasVersion?(state.release||'—'):'—';
-    var verTitle=hasVersion?(state.release?'Latest published release':'Release version unavailable'):'No version is published for this service';
+    var v=state.versions[s.slug];
+    var ver=v&&v.version?v.version:'—';
+    var verTitle=ver!=='—'?'Latest published release':(hasVersion?'Version unavailable':'No version is published for this service');
     return '<div class="check">'+
       '<span class="nm"><a href="'+esc(s.url)+'" target="_blank" rel="noopener"><b>'+esc(s.name)+'</b></a><span title="'+esc(s.url)+'">'+esc(s.url)+'</span><small class="ver" title="'+esc(verTitle)+'">Version '+esc(ver)+'</small></span>'+
       '<span class="up">'+(up?esc(up.value):'—')+'<small>'+esc(up?up.label:'preview')+'</small></span>'+
@@ -681,9 +667,11 @@ function load(){
     .catch(function(){return null;});
   var issues=Promise.resolve(getIssues()).catch(function(){return null;});
   var lastRun=Promise.resolve(getLastRun()).catch(function(){return null;});
-  var release=Promise.resolve(getRelease()).catch(function(){return null;});
-  return Promise.all([hist,summary,issues,lastRun,release]).then(function(res){
-    var rows=res[0],sum=res[1],list=res[2],run=res[3],rel=res[4];
+  var versions=Promise.resolve(fetch(RAW+'history/versions.json',{cache:'no-store'}))
+    .then(function(r){return r.ok?r.json():null;})
+    .catch(function(){return null;});
+  return Promise.all([hist,summary,issues,lastRun,versions]).then(function(res){
+    var rows=res[0],sum=res[1],list=res[2],run=res[3],vers=res[4];
     state.sites={};
     var starts=[],checks=[];
     SITES.forEach(function(s,i){
@@ -704,7 +692,7 @@ function load(){
     state.lastChange=checks.length?Math.max.apply(null,checks):0;
     state.lastCheck=run||0;
     state.summary=Array.isArray(sum)?sum:[];
-    state.release=rel&&rel.tag?rel.tag:'';
+    state.versions=vers&&typeof vers==='object'?vers:{};
     state.issuesOk=Array.isArray(list);
     state.issues=Array.isArray(list)?list:[];
     state.maint=[];
