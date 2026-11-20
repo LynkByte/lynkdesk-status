@@ -1,0 +1,81 @@
+name: Uptime Scheduler
+
+on:
+  schedule:
+    # Seed the chain if it ever stops. The chain itself triggers the next run.
+    - cron: "7 */6 * * *"
+  repository_dispatch:
+    types: [uptime-scheduler]
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: Number of uptime checks to trigger
+        required: false
+        default: "23"
+      interval_seconds:
+        description: Seconds between checks
+        required: false
+        default: "900"
+      chain:
+        description: Trigger the next scheduler when this run ends
+        required: false
+        default: "true"
+
+concurrency:
+  group: lynkbyte-uptime-scheduler
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  schedule:
+    name: Trigger uptime checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - name: Trigger checks every interval
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+          ITERATIONS: ${{ github.event.inputs.iterations || '23' }}
+          INTERVAL: ${{ github.event.inputs.interval_seconds || '900' }}
+        run: |
+          set -euo pipefail
+          case "$ITERATIONS" in (*[!0-9]*|'') ITERATIONS=23 ;; esac
+          case "$INTERVAL" in (*[!0-9]*|'') INTERVAL=900 ;; esac
+          if [ "$ITERATIONS" -lt 1 ]; then ITERATIONS=23; fi
+          for i in $(seq 1 "$ITERATIONS"); do
+            code=$(curl -sS -o /tmp/dispatch.json -w '%{http_code}' -X POST \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/dispatches" \
+              -d '{"event_type":"uptime"}')
+            echo "check $i/$ITERATIONS -> HTTP $code"
+            if [ "$code" != "204" ]; then
+              cat /tmp/dispatch.json || true
+            fi
+            if [ "$i" -lt "$ITERATIONS" ]; then
+              sleep "$INTERVAL"
+            fi
+          done
+
+      - name: Continue the chain
+        if: always() && github.event.inputs.chain != 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /tmp/self.json -w '%{http_code}' -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/$REPO/dispatches" \
+            -d '{"event_type":"uptime-scheduler"}')
+          echo "next scheduler -> HTTP $code"
+          if [ "$code" != "204" ]; then
+            cat /tmp/self.json || true
+            exit 1
+          fi
