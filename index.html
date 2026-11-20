@@ -144,7 +144,7 @@ footer a{color:var(--ind)}
   </section>
 
   <h2>What we monitor</h2>
-  <p class="sub">Live status for every service behind LynkByte. Open a service for its response-time history.</p>
+  <p class="sub">Live status for every service behind LynkByte. Open a service, or follow its status history on GitHub.</p>
   <div class="card checks" id="checks"></div>
 
   <h2>Last 24 hours</h2>
@@ -182,8 +182,8 @@ footer a{color:var(--ind)}
   <h2 id="updates">Get updates</h2>
   <p class="sub">We post what is happening here and on GitHub. No marketing emails.</p>
   <div class="card updates">
-    <a class="row" href="/history/web-app">
-      <span><b>Check history</b><span>Response times and uptime for the web app.</span></span>
+    <a class="row" href="https://github.com/LynkByte/lynkdesk-status/tree/master/history" target="_blank" rel="noopener">
+      <span><b>Status history on GitHub</b><span>Every recorded status change, per service.</span></span>
       <span class="go" aria-hidden="true">→</span>
     </a>
     <a class="row" href="https://github.com/LynkByte/lynkdesk-status/issues" target="_blank" rel="noopener">
@@ -448,7 +448,7 @@ function renderChecks(){
       '<span class="nm"><a href="'+esc(s.url)+'" target="_blank" rel="noopener"><b>'+esc(s.name)+'</b></a><span title="'+esc(s.url)+'">'+esc(s.url)+'</span></span>'+
       '<span class="up">'+(up?esc(up.value):'—')+'<small>'+esc(up?up.label:'preview')+'</small></span>'+
       '<span class="chip c-'+st+'" title="'+esc(age)+'"><i></i>'+esc(text)+'</span>'+
-      '<a class="go" href="/history/'+s.slug+'" aria-label="'+esc('Response-time history for '+s.name)+'">→</a>'+
+      '<a class="go" href="https://github.com/LynkByte/lynkdesk-status/commits/master/history/'+s.slug+'.yml" target="_blank" rel="noopener" title="'+esc('Status history for '+s.name+' on GitHub')+'" aria-label="'+esc('Status history for '+s.name+' on GitHub')+'">→</a>'+
     '</div>';
   }).join('');
 }
