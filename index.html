@@ -472,6 +472,7 @@ function updateAges(){
   if(checked){
     var txt=when?prefix+rel(when):'not checked yet';
     checked.textContent=txt.charAt(0).toUpperCase()+txt.slice(1);
+    checked.title=when?new Date(when).toLocaleString():'';
   }
 }
 
@@ -795,7 +796,7 @@ if('caches' in window){
 
 load();
 setInterval(updateAges,60000);
-setInterval(function(){if(!document.hidden) load();},5*60*1000);
+setInterval(function(){if(!document.hidden) load();},10*60*1000);
 })();
 </script>
 </body>
