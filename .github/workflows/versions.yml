@@ -24,15 +24,18 @@ jobs:
         with:
           token: ${{ secrets.GH_PAT || github.token }}
 
+      # LynkByte/lynkdesk-web is private. Add an APP_REPO_TOKEN secret with
+      # read access to it (or grant the existing GH_PAT access) to enable the
+      # automatic update. Without it, versions.json is left unchanged.
       - name: Read the latest app release
         id: release
         env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
+          GH_TOKEN: ${{ secrets.APP_REPO_TOKEN || secrets.GH_PAT }}
         run: |
           set -euo pipefail
-          if ! payload=$(gh api repos/LynkByte/lynkdesk-web/releases/latest --jq '{version:.tag_name,published_at:.published_at}'); then
-            echo "::error::Could not read LynkByte/lynkdesk-web releases. Check that GH_PAT can access the private app repository."
-            exit 1
+          if ! payload=$(gh api repos/LynkByte/lynkdesk-web/releases/latest --jq '{version:.tag_name,published_at:.published_at}' 2>/tmp/gh.err); then
+            echo "::warning::Could not read LynkByte/lynkdesk-web releases. Add APP_REPO_TOKEN with read access to the private app repository, or grant GH_PAT access. $(cat /tmp/gh.err)"
+            payload=""
           fi
           echo "payload=$payload" >> "$GITHUB_OUTPUT"
 
@@ -41,6 +44,10 @@ jobs:
           PAYLOAD: ${{ steps.release.outputs.payload }}
         run: |
           set -euo pipefail
+          if [ -z "$PAYLOAD" ]; then
+            echo "No release payload; leaving history/versions.json unchanged."
+            exit 0
+          fi
           node -e '
             const fs = require("fs");
             const release = JSON.parse(process.env.PAYLOAD);
