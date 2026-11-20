@@ -144,7 +144,7 @@ footer a{color:var(--ind)}
   </section>
 
   <h2>What we monitor</h2>
-  <p class="sub">Live status for every service behind LynkByte. Open a service, or follow its status history on GitHub.</p>
+  <p class="sub">Live status for every service behind LynkByte. Open a service, or follow its history.</p>
   <div class="card checks" id="checks"></div>
 
   <h2>Last 24 hours</h2>
@@ -180,14 +180,10 @@ footer a{color:var(--ind)}
   <div class="card inc" id="inc"><p class="muted" style="margin:0">Loading the latest incident information…</p></div>
 
   <h2 id="updates">Get updates</h2>
-  <p class="sub">We post what is happening here and on GitHub. No marketing emails.</p>
+  <p class="sub">We post what is happening here. No marketing emails.</p>
   <div class="card updates">
-    <a class="row" href="https://github.com/LynkByte/lynkdesk-status/tree/master/history" target="_blank" rel="noopener">
-      <span><b>Status history on GitHub</b><span>Every recorded status change, per service.</span></span>
-      <span class="go" aria-hidden="true">→</span>
-    </a>
-    <a class="row" href="https://github.com/LynkByte/lynkdesk-status/issues" target="_blank" rel="noopener">
-      <span><b>Incidents on GitHub</b><span>Open an incident, or subscribe to updates on GitHub.</span></span>
+    <a class="row" href="/history/">
+      <span><b>Service history</b><span>Uptime and response-time history for every service.</span></span>
       <span class="go" aria-hidden="true">→</span>
     </a>
     <a class="row" href="mailto:hello@lynkbyte.com">
@@ -201,7 +197,7 @@ footer a{color:var(--ind)}
   <span>Need help? <a href="mailto:hello@lynkbyte.com">hello@lynkbyte.com</a></span>
 </footer>
 </div>
-<noscript><div class="w"><p class="card">This page needs JavaScript to load live status. You can still see the raw checks in the <a href="https://github.com/LynkByte/lynkdesk-status">status repository</a>.</p></div></noscript>
+<noscript><div class="w"><p class="card">This page needs JavaScript to load live status. Please email <a href="mailto:hello@lynkbyte.com">hello@lynkbyte.com</a> if you need help.</p></div></noscript>
 <script>
 (function(){
 'use strict';
@@ -236,7 +232,6 @@ var state={sites:{},summary:[],issues:[],issuesOk:false,maint:[],events:[],track
 
 function $(id){return document.getElementById(id);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
-function safeUrl(u){return /^https:\/\/github\.com\//.test(String(u||''))?u:'https://github.com/LynkByte/lynkdesk-status/issues';}
 function has(arr,v){return arr.indexOf(v)>-1;}
 
 function parseYml(text){
@@ -448,7 +443,7 @@ function renderChecks(){
       '<span class="nm"><a href="'+esc(s.url)+'" target="_blank" rel="noopener"><b>'+esc(s.name)+'</b></a><span title="'+esc(s.url)+'">'+esc(s.url)+'</span></span>'+
       '<span class="up">'+(up?esc(up.value):'—')+'<small>'+esc(up?up.label:'preview')+'</small></span>'+
       '<span class="chip c-'+st+'" title="'+esc(age)+'"><i></i>'+esc(text)+'</span>'+
-      '<a class="go" href="https://github.com/LynkByte/lynkdesk-status/commits/master/history/'+s.slug+'.yml" target="_blank" rel="noopener" title="'+esc('Status history for '+s.name+' on GitHub')+'" aria-label="'+esc('Status history for '+s.name+' on GitHub')+'">→</a>'+
+      '<a class="go" href="/history/'+s.slug+'/" title="'+esc('History for '+s.name)+'" aria-label="'+esc('History for '+s.name)+'">→</a>'+
     '</div>';
   }).join('');
 }
@@ -545,7 +540,7 @@ function renderIncident(){
   }
   if(!state.issuesOk){
     if(overall()==='out'||overall()==='deg'){
-      box.innerHTML='<span class="chip c-out"><i></i>Ongoing</span><h3>Some services are affected</h3><p style="margin:8px 0 0">The live checks above show a problem. Detailed incident updates are temporarily unavailable; refresh in a moment or check <a href="https://github.com/LynkByte/lynkdesk-status/issues" target="_blank" rel="noopener">GitHub</a>.</p>';
+      box.innerHTML='<span class="chip c-out"><i></i>Ongoing</span><h3>Some services are affected</h3><p style="margin:8px 0 0">The live checks above show a problem. Detailed incident updates are temporarily unavailable; refresh in a moment or email <a href="mailto:hello@lynkbyte.com">hello@lynkbyte.com</a>.</p>';
     }else{
       box.innerHTML='<span class="chip c-ok"><i></i>No incidents</span><h3>All clear</h3><p style="margin:8px 0 0">The live checks are passing. Detailed incident history is temporarily unavailable.</p>';
     }
@@ -572,8 +567,7 @@ function renderOpenIncident(issue){
     '<dt>What you can do</dt><dd>'+esc(what)+'</dd>'+
     '<dt>What we are doing</dt><dd id="doing">We’re investigating. Updates will appear below.</dd>'+
     '<dt>Started</dt><dd>'+esc(fmtDateTime(issue.created_at))+'</dd></dl>'+
-    '<ol class="ups" id="ups"><li><b>Reported</b> <span class="mono">'+esc(fmtTime(issue.created_at))+'</span><br>We’re looking into it.</li></ol>'+
-    '<p style="margin:14px 0 0"><a href="'+esc(safeUrl(issue.html_url))+'" target="_blank" rel="noopener">Follow this incident on GitHub</a></p>';
+    '<ol class="ups" id="ups"><li><b>Reported</b> <span class="mono">'+esc(fmtTime(issue.created_at))+'</span><br>We’re looking into it.</li></ol>';
   loadComments(issue);
 }
 
@@ -620,7 +614,7 @@ function renderAllClear(){
     html+='<p style="margin:8px 0 0">Nothing is wrong right now. The last problem was '+esc(cleanTitle(recent[0].title))+' on '+esc(fmtDate(recent[0].closed_at))+', fixed in '+esc(fmtDur(new Date(recent[0].closed_at)-new Date(recent[0].created_at)))+'.</p>';
     html+='<ul class="recent">'+recent.map(function(i){
       var dur=fmtDur(new Date(i.closed_at)-new Date(i.created_at));
-      return '<li><span>'+esc(cleanTitle(i.title))+'</span><span class="mono">'+esc(fmtDate(i.closed_at))+' · '+esc(dur)+'</span><a href="'+esc(safeUrl(i.html_url))+'" target="_blank" rel="noopener">Details</a></li>';
+      return '<li><span>'+esc(cleanTitle(i.title))+'</span><span class="mono">'+esc(fmtDate(i.closed_at))+' · '+esc(dur)+'</span></li>';
     }).join('')+'</ul>';
   }else{
     html+='<p style="margin:8px 0 0">Nothing is wrong right now. No incidents since tracking began on '+esc(fmtDateFull(state.trackingStart))+'.</p>';
