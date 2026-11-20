@@ -5,8 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>LynkByte status · Can I use it right now?</title>
 <meta name="description" content="Live availability for LynkByte: signing in, billing, the web app and the Android app.">
-<meta name="theme-color" content="#FBF8F3" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#17141B" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBF8F3">
 <meta property="og:title" content="LynkByte status">
 <meta property="og:description" content="Can I use LynkByte right now? Live availability for signing in, billing, the web app and the Android app.">
 <meta property="og:type" content="website">
@@ -21,7 +20,6 @@
 :root{--ink:#312E32;--body:#4F4C52;--slate:#6C6979;--paper:#FBF8F3;--card:#fff;--rule:#E8E2D8;--on:#fff;--ind:#5046E6;
 --butter:#FFF0BF;--mint:#D9F2E5;--pink:#FFDDE6;--lilac:#E8E3FF;
 --s-ok:#7DCDA3;--s-deg:#F2C94C;--s-out:#E5708F;--s-mnt:#9A93FF;color-scheme:light}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--ink:#F2EFF5;--body:#CFCBD6;--slate:#A29EAD;--paper:#17141B;--card:#211E27;--rule:#36323E;--on:#17141B;--ind:#9A93FF;--butter:#4A4530;--mint:#2F4A3E;--pink:#4D3340;--lilac:#3A3659;color-scheme:dark}}
 :root[data-theme="dark"]{--ink:#F2EFF5;--body:#CFCBD6;--slate:#A29EAD;--paper:#17141B;--card:#211E27;--rule:#36323E;--on:#17141B;--ind:#9A93FF;--butter:#4A4530;--mint:#2F4A3E;--pink:#4D3340;--lilac:#3A3659;color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-padding-top:24px}
@@ -124,7 +122,6 @@ footer a{color:var(--ind)}
 <header>
   <a class="brand" href="/">LynkByte <small>Status</small></a>
   <div class="h-actions">
-    <a class="pill" href="#updates">Get updates</a>
     <button class="pill ib" id="theme" type="button" aria-label="Switch between light and dark">
       <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
@@ -179,8 +176,8 @@ footer a{color:var(--ind)}
   <h2 id="ih">What’s happening</h2>
   <div class="card inc" id="inc"><p class="muted" style="margin:0">Loading the latest incident information…</p></div>
 
-  <h2 id="updates">Get updates</h2>
-  <p class="sub">We post what is happening here. No marketing emails.</p>
+  <h2 id="help">Help and history</h2>
+  <p class="sub">See the full history, or get in touch. No marketing emails.</p>
   <div class="card updates">
     <a class="row" href="/history/">
       <span><b>Service history</b><span>Uptime and response-time history for every service.</span></span>
@@ -722,8 +719,10 @@ if(PREVIEW){
 
 $('theme').addEventListener('click',function(){
   var root=document.documentElement;
-  var dark=root.getAttribute('data-theme')?root.getAttribute('data-theme')==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;
-  root.setAttribute('data-theme',dark?'light':'dark');
+  var next=root.getAttribute('data-theme')==='dark'?'light':'dark';
+  root.setAttribute('data-theme',next);
+  var meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content',next==='dark'?'#17141B':'#FBF8F3');
 });
 
 if('serviceWorker' in navigator){
