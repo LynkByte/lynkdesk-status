@@ -151,7 +151,7 @@ footer a{color:var(--ind)}
   <div class="grid" id="tasks"></div>
 
   <h2>Last 24 hours</h2>
-  <p class="sub">One block for each hour. Checked <span id="checked">…</span>.</p>
+  <p class="sub">One block for each hour. <span id="checked">Checking…</span>.</p>
   <div class="card">
     <div class="rib" id="rib" role="img" aria-label="Health for each of the last 24 hours"></div>
     <div class="lab mono"><span>24 hours ago</span><span>Now</span></div>
@@ -467,7 +467,10 @@ function updateAges(){
   else if(when){meta.textContent='Right now · '+prefix+rel(when);meta.title=new Date(when).toLocaleString();}
   else{meta.textContent='Right now · no check yet';meta.title='';}
   var checked=$('checked');
-  if(checked) checked.textContent=when?prefix+rel(when):'not yet';
+  if(checked){
+    var txt=when?prefix+rel(when):'not checked yet';
+    checked.textContent=txt.charAt(0).toUpperCase()+txt.slice(1);
+  }
 }
 
 function renderSvc(){
