@@ -53,7 +53,7 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;pa
 .check .nm b{display:block;font:600 15px/22px Inter,Arial,sans-serif;color:var(--ink)}
 .check .nm a{text-decoration:none;color:var(--ink)}
 .check .nm a:hover b{text-decoration:underline}
-.check .nm span{display:block;color:var(--slate);font:500 12px/18px 'JetBrains Mono',monospace;word-break:break-all}
+.check .nm span{display:block;color:var(--slate);font:500 12px/18px 'JetBrains Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .check .up{text-align:right;font:700 18px/22px Poppins,Arial,sans-serif;color:var(--ink);white-space:nowrap}
 .check .up small{display:block;font:500 11.5px/16px Inter,Arial,sans-serif;color:var(--slate);text-transform:uppercase;letter-spacing:.04em}
 .check .go{font:600 18px Inter,Arial,sans-serif;color:var(--ind);text-decoration:none;justify-self:end}
@@ -64,23 +64,11 @@ header{display:flex;align-items:center;justify-content:space-between;gap:12px;pa
 .ringc span{font-size:14px;color:var(--body)}
 h2{font-size:24px;line-height:32px;margin:48px 0 6px}
 .sub{margin:0 0 18px;color:var(--slate);font-size:15px}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.t{background:var(--card);border:1px solid var(--rule);border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px;transition:border-color .2s;width:100%}
-.t:hover{border-color:var(--ink)}
-.t .h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.it{width:48px;height:48px;border-radius:16px;display:grid;place-items:center;background:var(--lilac)}
-.t h3{font-size:17px;line-height:24px}
-.t p{margin:0;font-size:14.5px;line-height:22px;color:var(--body)}
 .chip{display:inline-flex;align-items:center;gap:7px;border-radius:99px;padding:2px 12px 2px 10px;font:600 13px/22px Inter,Arial,sans-serif;color:var(--ink);white-space:nowrap}
 .chip i{width:8px;height:8px;border-radius:50%;background:var(--ink);flex:none}
 .c-ok{background:var(--mint)}.c-deg{background:var(--butter)}.c-out{background:var(--pink)}.c-mnt,.c-none{background:var(--lilac)}
 .c-none{background:transparent;border:1.5px dashed var(--rule);color:var(--slate)}
 .c-none i{background:var(--slate)}
-.more{display:none;border-top:1px solid var(--rule);padding-top:12px;font-size:13.5px;line-height:21px;color:var(--slate)}
-.t[aria-expanded="true"] .more{display:block}
-.t .tg{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}
-.tg span{background:var(--paper);border:1px solid var(--rule);border-radius:99px;padding:0 10px;color:var(--ink);font-size:12.5px}
-.tl{margin-top:auto;font:600 13px Inter,Arial,sans-serif;color:var(--ind)}
 .card{background:var(--card);border:1px solid var(--rule);border-radius:28px;padding:26px}
 .rib{display:grid;grid-template-columns:repeat(24,1fr);gap:4px;margin-top:6px}
 .rib i{height:44px;border-radius:8px;display:block}
@@ -125,7 +113,7 @@ footer{margin:40px 0 44px;padding-top:20px;border-top:1px solid var(--rule);disp
 footer a{color:var(--ind)}
 .retry{margin-top:14px;display:inline-flex}
 @media(max-width:860px){.hero{grid-template-columns:1fr;padding:30px 24px}.hero h1{font-size:34px;line-height:42px}.ringw{width:min(70%,220px)}.cols{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:620px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:1fr}.brand small{display:none}.pill{padding:0 16px}}
+@media(max-width:620px){.stats{grid-template-columns:1fr}.brand small{display:none}.pill{padding:0 16px}}
 @media(max-width:560px){.w{padding:0 16px}.card{padding:20px}.updates{padding:4px 20px}.checks{padding:4px 20px}.check{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nm up" "chip go";row-gap:8px;column-gap:12px}.check .nm{grid-area:nm}.check .up{grid-area:up}.check .chip{grid-area:chip;justify-self:start}.check .go{grid-area:go}.inc dl{grid-template-columns:1fr;gap:2px}.inc dd{margin-bottom:10px}.rib{gap:2px}.rib i{height:36px;border-radius:5px}.hero h1{font-size:30px;line-height:38px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -151,17 +139,13 @@ footer a{color:var(--ind)}
     </div>
     <div class="ringw">
       <svg viewBox="0 0 220 220" id="ring" aria-hidden="true"></svg>
-      <div class="ringc"><b id="rn">—</b><span>things working</span></div>
+      <div class="ringc"><b id="rn">—</b><span>services working</span></div>
     </div>
   </section>
 
   <h2>What we monitor</h2>
-  <p class="sub">The four live checks behind this page. Open a service for its response-time history.</p>
+  <p class="sub">Live status for every service behind LynkByte. Open a service for its response-time history.</p>
   <div class="card checks" id="checks"></div>
-
-  <h2>Can I…</h2>
-  <p class="sub">Pick what you want to do. Open a card for what is behind it and when it was last affected.</p>
-  <div class="grid" id="tasks"></div>
 
   <h2>Last 24 hours</h2>
   <p class="sub">One block for each hour. <span id="checked">Checking…</span>.</p>
@@ -241,32 +225,14 @@ var SITES=[
   {slug:'database-and-cache',name:'Database and cache',url:'https://app.lynkbyte.com/health/deep'}
 ];
 
-var CAPS=[
-  {key:'signin',icon:'in',title:'Sign in',checks:['web-app','api','database-and-cache'],tags:['Web app','API','Database'],
-   copy:{ok:'Sign-in is working. Open the app and get to work.',deg:'Sign-in still works, but it may take a moment longer than usual.',out:'You can’t sign in right now. If you’re already signed in, you can carry on.',mnt:'Sign-in is briefly unavailable for maintenance. It will be back shortly.'}},
-  {key:'bills',icon:'bill',title:'Create and save bills',checks:['api','database-and-cache'],tags:['API','Database'],
-   copy:{ok:'You can create and save bills as normal.',deg:'Bills still save, but may take a moment longer than usual.',out:'You can’t save new bills right now. Bills you already saved are safe.',mnt:'Saving bills is briefly unavailable for maintenance. Saved bills are safe.'}},
-  {key:'web',icon:'web',title:'Use the web app',checks:['web-app'],tags:['Web app'],
-   copy:{ok:'The web app is working in your browser.',deg:'The web app works, but some pages may load slowly.',out:'The web app isn’t loading right now. We’re fixing it.',mnt:'The web app is briefly unavailable for maintenance.'}},
-  {key:'android',icon:'app',title:'Use the Android app',checks:['api'],tags:['API'],
-   copy:{ok:'The Android app is working.',deg:'The Android app works, but some screens may load slowly.',out:'The Android app may not load right now. We’re fixing it.',mnt:'The Android app is briefly unavailable for maintenance.'}}
-];
-
 var DEMO={
-  deg:{hero:['Everything works, but some things are slow.','Keep working as normal. Some screens may take a little longer than usual.'],title:'Some things are slower than usual',who:'Anyone using the web or Android app',do:'Keep working as normal. Nothing is lost.',we:'We’re watching the affected services and will post an update here.',updates:[['Monitoring','The slow period is easing. We’re keeping an eye on it.','10:42'],['Investigating','Some screens are taking longer to load.','10:05']]},
-  out:{hero:['Billing is not working right now.','We are fixing it. Bills you already saved are safe.'],title:'Bills can’t be saved',who:'Anyone saving a bill, in the app or on the web',do:'Write the bill down and enter it later. Saved bills are safe.',we:'We found the faulty change and are rolling it back.',updates:[['Identified','The faulty change is found. Rolling back now.','10:31'],['Investigating','Saving a bill fails for some people.','10:12']]},
-  mnt:{hero:['Planned maintenance is under way.','Sign in and billing are briefly unavailable. Your data is safe.'],title:'Database upgrade',who:'Sign in and billing, for about 30 minutes',do:'If you’re already signed in, you can keep working.',we:'We’re upgrading the database to make everything faster. No data is lost.',updates:[['In progress','Sign in and billing are briefly unavailable.','10:00'],['Scheduled','Planned window: 10:00 to 10:30 today.','Announced 17 Nov']]},
-  ok:{hero:['Everything is working.','You can sign in, create bills and use the web or Android app.'],title:null}
+  ok:{hero:['Everything is working.','All four services are responding normally.'],title:null},
+  deg:{hero:['Some services are slower than usual.','Keep working as normal. Screens may take a little longer to load.'],title:'Some services are slower than usual',who:'Customers using the web app or API',do:'Keep working as normal. Nothing is lost.',we:'We’re watching the affected services and will post an update here.',updates:[['Monitoring','The slow period is easing. We’re keeping an eye on it.','10:42'],['Investigating','Some requests are taking longer than usual.','10:05']]},
+  out:{hero:['A service is not working right now.','We are fixing it. Your saved data is safe.'],title:'A service is not working',who:'Anyone using the affected service',do:'Try again in a few minutes. Your saved data is safe.',we:'We found the faulty change and are rolling it back.',updates:[['Identified','The faulty change is found. Rolling back now.','10:31'],['Investigating','Some requests are failing.','10:12']]},
+  mnt:{hero:['Planned maintenance is under way.','Some services are briefly unavailable. Your data is safe.'],title:'Database upgrade',who:'The web app and API, for about 30 minutes',do:'If you’re already signed in, you can keep working.',we:'We’re upgrading the database to make everything faster. No data is lost.',updates:[['In progress','Some services are briefly unavailable.','10:00'],['Scheduled','Planned window: 10:00 to 10:30 today.','Announced 17 Nov']]}
 };
 
-var ICON={
-  in:'<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/>',
-  bill:'<path d="M5 3h14v18l-3-2-2 2-2-2-2 2-2-2-3 2z"/><path d="M9 8h6M9 12h6"/>',
-  app:'<rect x="7" y="2" width="10" height="20" rx="3"/><path d="M11 18h2"/>',
-  web:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'
-};
-
-var state={sites:{},summary:[],issues:[],issuesOk:false,maint:[],events:[],trackingStart:0,lastCheck:0,lastChange:0,loaded:false,failed:false,open:{},comments:{}};
+var state={sites:{},summary:[],issues:[],issuesOk:false,maint:[],events:[],trackingStart:0,lastCheck:0,lastChange:0,loaded:false,failed:false,comments:{}};
 
 function $(id){return document.getElementById(id);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -366,18 +332,6 @@ function siteState(slug){
   }
   return st;
 }
-function worst(list){
-  var real=list.filter(function(x){return x&&x!=='none';});
-  if(!real.length) return 'none';
-  if(has(real,'out')) return 'out';
-  if(has(real,'deg')) return 'deg';
-  if(has(real,'mnt')) return 'mnt';
-  return 'ok';
-}
-function capState(c){
-  if(PREVIEW) return PREVIEW;
-  return worst(c.checks.map(siteState));
-}
 function overall(){
   if(PREVIEW) return PREVIEW;
   var sts=SITES.map(function(s){return siteState(s.slug);});
@@ -433,20 +387,9 @@ function hadDowntime(dayStart){
   var key=ymd(new Date(dayStart));
   return state.summary.some(function(x){return x&&x.dailyMinutesDown&&x.dailyMinutesDown[key]>0;});
 }
-function affectedCaps(slugs){
-  return CAPS.filter(function(c){return c.checks.some(function(s){return slugs.indexOf(s)>-1;});});
+function affectedSites(slugs){
+  return SITES.filter(function(s){return slugs.indexOf(s.slug)>-1;});
 }
-function lastIncidentFor(c){
-  var cutoff=Date.now()-90*86400000;
-  var list=state.issues.filter(function(i){
-    return isStatus(i)&&i.closed_at&&new Date(i.closed_at).getTime()>=cutoff&&issueSlugs(i).some(function(s){return c.checks.indexOf(s)>-1;});
-  }).sort(function(a,b){return new Date(b.closed_at)-new Date(a.closed_at);});
-  if(!list.length) return '';
-  var i=list[0];
-  return cleanTitle(i.title)+' · '+fmtDate(i.closed_at)+' · fixed in '+fmtDur(new Date(i.closed_at)-new Date(i.created_at));
-}
-
-function icon(name){return '<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">'+(ICON[name]||'')+'</svg>';}
 function arc(cx,cy,r,a0,a1){
   function p(a){return [cx+r*Math.cos(a),cy+r*Math.sin(a)];}
   var s=p(a0),e=p(a1);
@@ -454,19 +397,20 @@ function arc(cx,cy,r,a0,a1){
 }
 
 function renderHero(){
-  var w=overall(),hero=$('hero'),good=CAPS.filter(function(c){return capState(c)==='ok';}).length;
+  var w=overall(),hero=$('hero');
+  var good=PREVIEW?(PREVIEW==='ok'?SITES.length:0):SITES.filter(function(s){return siteState(s.slug)==='ok';}).length;
   hero.className='hero '+w;
-  var downCaps=CAPS.filter(function(c){return capState(c)==='out';});
+  var downSites=SITES.filter(function(s){return siteState(s.slug)==='out';});
   var title,text;
   if(PREVIEW&&DEMO[w]&&DEMO[w].hero){title=DEMO[w].hero[0];text=DEMO[w].hero[1];}
-  else if(w==='ok'){title='Everything is working.';text='You can sign in, create bills and use the web or Android app.';}
-  else if(w==='deg'){title='Everything works, but some things are slow.';text='Keep working as normal. Some screens may take a little longer than usual.';}
-  else if(w==='out'){title=(downCaps[0]?downCaps[0].title:'A service')+' isn’t working right now.';text='We are fixing it. Bills and customers you already saved are safe.';}
-  else if(w==='mnt'){title='Planned maintenance is under way.';text='Some parts are briefly unavailable. Your saved data is safe.';}
+  else if(w==='ok'){title='Everything is working.';text='The website, web app, API and database are responding normally.';}
+  else if(w==='deg'){title='Some services are slower than usual.';text='Keep working as normal. Screens may take a little longer to load.';}
+  else if(w==='out'){title=(downSites[0]?downSites[0].name:'A service')+' isn’t working right now.';text='We are fixing it. Your saved data is safe.';}
+  else if(w==='mnt'){title='Planned maintenance is under way.';text='Some services are briefly unavailable. Your saved data is safe.';}
   else{title='Waiting for the first checks.';text='The page will update as soon as the first results arrive.';}
   $('ht').textContent=title;
   $('hs').textContent=text;
-  $('rn').textContent=good+'/'+CAPS.length;
+  $('rn').textContent=good+'/'+SITES.length;
   hero.setAttribute('aria-busy','false');
   updateAges();
 }
@@ -502,25 +446,11 @@ function renderChecks(){
     var age=site&&site.lastUpdated?'status since '+rel(new Date(site.lastUpdated).getTime()):'';
     var text=st==='none'?'No data yet':LAB[st];
     return '<div class="check">'+
-      '<span class="nm"><a href="'+esc(s.url)+'" target="_blank" rel="noopener"><b>'+esc(s.name)+'</b></a><span>'+esc(s.url)+'</span></span>'+
+      '<span class="nm"><a href="'+esc(s.url)+'" target="_blank" rel="noopener"><b>'+esc(s.name)+'</b></a><span title="'+esc(s.url)+'">'+esc(s.url)+'</span></span>'+
       '<span class="up">'+(up?esc(up.value):'—')+'<small>'+esc(up?up.label:'preview')+'</small></span>'+
       '<span class="chip c-'+st+'" title="'+esc(age)+'"><i></i>'+esc(text)+'</span>'+
       '<a class="go" href="/history/'+s.slug+'" aria-label="'+esc('Response-time history for '+s.name)+'">→</a>'+
     '</div>';
-  }).join('');
-}
-
-function renderCards(){
-  $('tasks').innerHTML=CAPS.map(function(c,i){
-    var st=capState(c),copy=c.copy[st]||'We’re waiting for the first checks.',open=!!state.open[i];
-    var last=lastIncidentFor(c);
-    var note=!state.issuesOk?'Incident details are temporarily unavailable.':(last?'Last incident: '+last+'.':'No incidents in the last 90 days.');
-    return '<button class="t" type="button" aria-expanded="'+open+'" data-i="'+i+'">'+
-      '<div class="h"><span class="it">'+icon(c.icon)+'</span><span class="chip c-'+st+'"><i></i>'+esc(st==='none'?'No data yet':LAB[st])+'</span></div>'+
-      '<h3>'+esc(c.title)+'</h3><p>'+esc(copy)+'</p>'+
-      '<div class="more"><div class="tg">'+c.tags.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>'+
-      esc(note)+'</div>'+
-      '<span class="tl">'+(open?'Show less':'Show more')+'</span></button>';
   }).join('');
 }
 
@@ -630,9 +560,9 @@ function renderIncident(){
 }
 
 function renderOpenIncident(issue){
-  var box=$('inc'),st=isDegraded(issue)?'deg':'out',slugs=issueSlugs(issue),caps=affectedCaps(slugs);
-  var who=caps.length?caps.map(function(c){return c.title;}).join(', '):'Some customers';
-  var what=caps.length?caps[0].copy[st]:'Try again in a few minutes.';
+  var box=$('inc'),st=isDegraded(issue)?'deg':'out',slugs=issueSlugs(issue),sites=affectedSites(slugs);
+  var who=sites.length?sites.map(function(s){return s.name;}).join(', '):'Some services';
+  var what=st==='out'?'Try again in a few minutes. Your saved data is safe.':'Keep working as normal. Screens may take a little longer to load.';
   box.innerHTML='<span class="chip c-'+st+'"><i></i>Ongoing</span>'+
     '<h3>'+esc(cleanTitle(issue.title))+'</h3>'+
     '<dl><dt>Who is affected</dt><dd>'+esc(who)+'</dd>'+
@@ -667,8 +597,8 @@ function trimBody(body){
 }
 
 function renderMaint(m){
-  var box=$('inc'),slugs=m.down.concat(m.degraded),caps=affectedCaps(slugs);
-  var who=caps.length?caps.map(function(c){return c.title;}).join(', '):'Some services';
+  var box=$('inc'),slugs=m.down.concat(m.degraded),sites=affectedSites(slugs);
+  var who=sites.length?sites.map(function(s){return s.name;}).join(', '):'Some services';
   box.innerHTML='<span class="chip c-mnt"><i></i>In progress</span>'+
     '<h3>'+esc(m.title||'Planned maintenance')+'</h3>'+
     '<dl><dt>Who is affected</dt><dd>'+esc(who)+'</dd>'+
@@ -696,9 +626,9 @@ function renderAllClear(){
 }
 
 function renderRing(){
-  var n=CAPS.length,gap=.16,seg=2*Math.PI/n,out='';
+  var n=SITES.length,gap=.16,seg=2*Math.PI/n,out='';
   for(var i=0;i<n;i++){
-    var st=capState(CAPS[i]),a0=-Math.PI/2+i*seg+gap/2,a1=a0+seg-gap;
+    var st=PREVIEW||siteState(SITES[i].slug),a0=-Math.PI/2+i*seg+gap/2,a1=a0+seg-gap;
     out+='<path d="'+arc(110,110,88,a0,a1)+'" fill="none" stroke-width="20" stroke-linecap="round" stroke="'+(st==='none'?'var(--rule)':COL[st])+'" opacity="'+(st==='none'?'.7':'1')+'"/>';
   }
   $('ring').innerHTML=out;
@@ -707,7 +637,6 @@ function renderRing(){
 function render(){
   renderHero();
   renderChecks();
-  renderCards();
   renderRibbon();
   renderCalendar();
   renderStats();
@@ -723,8 +652,7 @@ function fail(){
   $('ht').textContent='We couldn’t load the latest checks.';
   $('hs').textContent='The services themselves may still be working. Try again in a moment.';
   $('rn').textContent='—';
-  $('checks').innerHTML='<p class="muted" style="margin:0">Service checks could not be loaded.</p>';
-  $('tasks').innerHTML='<p class="muted" style="grid-column:1/-1;margin:0">Status details could not be loaded. <button type="button" class="pill dk retry" id="retry">Try again</button></p>';
+  $('checks').innerHTML='<p class="muted" style="margin:0">Service checks could not be loaded. <button type="button" class="pill dk retry" id="retry">Try again</button></p>';
   $('inc').innerHTML='<span class="chip c-none"><i></i>No data</span><h3>Status unavailable</h3><p style="margin:8px 0 0">We couldn’t reach the status data. Please try again, or email <a href="mailto:hello@lynkbyte.com">hello@lynkbyte.com</a>.</p>';
   $('up').textContent='—';$('ni').textContent='—';$('fix').textContent='—';
   var retry=$('retry');
@@ -794,16 +722,6 @@ if(PREVIEW){
   banner.textContent='Design preview · showing the “'+(PREVIEW==='deg'?'slower':PREVIEW==='out'?'outage':PREVIEW==='mnt'?'maintenance':'working')+'” state, not live data';
   document.documentElement.setAttribute('data-preview',PREVIEW);
 }
-
-$('tasks').addEventListener('click',function(e){
-  var b=e.target.closest('.t');
-  if(!b) return;
-  var i=Number(b.getAttribute('data-i'));
-  state.open[i]=!state.open[i];
-  renderCards();
-  var next=document.querySelector('.t[data-i="'+i+'"]');
-  if(next) next.focus();
-});
 
 $('theme').addEventListener('click',function(){
   var root=document.documentElement;
