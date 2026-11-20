@@ -489,11 +489,12 @@ function renderCards(){
   $('tasks').innerHTML=CAPS.map(function(c,i){
     var st=capState(c),copy=c.copy[st]||'We’re waiting for the first checks.',open=!!state.open[i];
     var last=lastIncidentFor(c);
+    var note=!state.issuesOk?'Incident details are temporarily unavailable.':(last?'Last incident: '+last+'.':'No incidents in the last 90 days.');
     return '<button class="t" type="button" aria-expanded="'+open+'" data-i="'+i+'">'+
       '<div class="h"><span class="it">'+icon(c.icon)+'</span><span class="chip c-'+st+'"><i></i>'+esc(st==='none'?'No data yet':LAB[st])+'</span></div>'+
       '<h3>'+esc(c.title)+'</h3><p>'+esc(copy)+'</p>'+
       '<div class="more"><div class="tg">'+c.tags.map(function(t){return '<span>'+esc(t)+'</span>';}).join('')+'</div>'+
-      (last?esc('Last incident: '+last+'.'):'No incidents in the last 90 days.')+'</div>'+
+      esc(note)+'</div>'+
       '<span class="tl">'+(open?'Show less':'Show more')+'</span></button>';
   }).join('');
 }
