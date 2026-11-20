@@ -1,0 +1,68 @@
+name: Versions CI
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  repository_dispatch:
+    types: [versions]
+  workflow_dispatch:
+
+concurrency:
+  group: lynkbyte-versions
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update service versions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - name: Read the latest app release
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          set -euo pipefail
+          if ! payload=$(gh api repos/LynkByte/lynkdesk-web/releases/latest --jq '{version:.tag_name,published_at:.published_at}'); then
+            echo "::error::Could not read LynkByte/lynkdesk-web releases. Check that GH_PAT can access the private app repository."
+            exit 1
+          fi
+          echo "payload=$payload" >> "$GITHUB_OUTPUT"
+
+      - name: Write versions.json
+        env:
+          PAYLOAD: ${{ steps.release.outputs.payload }}
+        run: |
+          set -euo pipefail
+          node -e '
+            const fs = require("fs");
+            const release = JSON.parse(process.env.PAYLOAD);
+            if (!release.version) throw new Error("release has no version");
+            const data = {
+              "web-app": { version: release.version, published_at: release.published_at || null },
+              "api": { version: release.version, published_at: release.published_at || null },
+              "corporate-website": { version: null },
+              "database-and-cache": { version: null }
+            };
+            fs.writeFileSync("history/versions.json", JSON.stringify(data, null, 2) + "\n");
+          '
+
+      - name: Commit if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- history/versions.json; then
+            echo "No version change"
+            exit 0
+          fi
+          git config user.name "Upptime Bot"
+          git config user.email "73812536+upptime-bot@users.noreply.github.com"
+          git add history/versions.json
+          git commit -m ":arrow_up: Update service versions [skip ci]"
+          git push
