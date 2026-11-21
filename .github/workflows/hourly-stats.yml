@@ -1,11 +1,14 @@
 name: Hourly Stats CI
 
 on:
+  workflow_run:
+    workflows: ["Response Time CI"]
+    types: [completed]
   repository_dispatch:
     types: [hourly_stats]
   workflow_dispatch:
   schedule:
-    # Fallback; the uptime scheduler dispatches this every 15 minutes.
+    # Fallback; normally the Response Time CI workflow triggers this.
     - cron: "17 * * * *"
 
 concurrency:
@@ -23,6 +26,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: master
           fetch-depth: 0
           token: ${{ secrets.GH_PAT || github.token }}
 

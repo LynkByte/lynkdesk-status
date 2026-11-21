@@ -62,7 +62,6 @@ jobs:
           for i in $(seq 1 "$ITERATIONS"); do
             echo "cycle $i/$ITERATIONS at $(date -u +%FT%TZ)"
             dispatch response_time
-            dispatch hourly_stats
             if [ "$i" -lt "$ITERATIONS" ]; then
               sleep "$INTERVAL"
             fi
