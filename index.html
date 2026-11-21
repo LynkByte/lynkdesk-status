@@ -667,7 +667,7 @@ function load(){
     .catch(function(){return null;});
   var issues=Promise.resolve(getIssues()).catch(function(){return null;});
   var lastRun=Promise.resolve(getLastRun()).catch(function(){return null;});
-  var versions=Promise.resolve(fetch(RAW+'history/versions.json',{cache:'no-store'}))
+  var versions=Promise.resolve(fetch(RAW+'data/versions.json',{cache:'no-store'}))
     .then(function(r){return r.ok?r.json():null;})
     .catch(function(){return null;});
   return Promise.all([hist,summary,issues,lastRun,versions]).then(function(res){

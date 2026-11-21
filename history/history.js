@@ -209,7 +209,7 @@ function load(){
   var histories=Promise.all(slugs.map(function(slug){
     return fetchText(RAW+'history/'+slug+'.yml').then(parseYml).then(function(h){return [slug,h];}).catch(function(){return [slug,null];});
   }));
-  var hourly=SERVICE?fetchJSON(RAW+'history/hourly.json').catch(function(){return null;}):Promise.resolve(null);
+  var hourly=SERVICE?fetchJSON(RAW+'data/hourly.json').catch(function(){return null;}):Promise.resolve(null);
   Promise.all([summary,histories,hourly]).then(function(res){
     state.summary=res[0];
     state.histories={};
