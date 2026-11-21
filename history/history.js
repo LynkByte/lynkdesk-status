@@ -15,7 +15,7 @@ var PERIODS=[['day','24 hours'],['week','7 days'],['month','30 days'],['year','1
 var LAB={up:'Working',degraded:'Slower than usual',down:'Not working',none:'No data yet'};
 var CHIP={up:'ok',degraded:'deg',down:'out',none:'none'};
 
-var state={summary:null,histories:{},period:'week',error:false};
+var state={summary:null,histories:{},hourly:null,period:'week',hourFilter:24,error:false};
 
 function $(id){return document.getElementById(id);}
 function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -118,6 +118,18 @@ function renderService(){
       '<div class="stat"><b>'+esc(time)+'</b><span>Average response</span></div>'+
       '<div class="stat"><b>'+esc(h.responseTime?h.responseTime+' ms':'—')+'</b><span>Last recorded response</span></div>'+
     '</div>'+
+    '<section class="hourly">'+
+      '<div class="hourly-head"><h2>Average response by hour</h2>'+
+        '<div class="seg hourly-seg" role="tablist" aria-label="Hourly response period">'+[[12,'12 hours'],[24,'24 hours'],[48,'48 hours'],[168,'7 days']].map(function(row){
+          return '<button type="button" role="tab" aria-selected="'+(state.hourFilter===row[0])+'" data-h="'+row[0]+'">'+row[1]+'</button>';
+        }).join('')+'</div>'+
+      '</div>'+
+      '<div class="card">'+
+        '<div id="hourly" class="hourly-chart"></div>'+
+        '<div class="lab mono"><span id="hourly-start"></span><span>Now</span></div>'+
+        '<p class="mono" id="hourly-summary"></p>'+
+      '</div>'+
+    '</section>'+
     '<div class="card"><table><thead><tr><th>Period</th><th>Uptime</th><th>Average response</th></tr></thead><tbody>'+tableRows+'</tbody></table></div>';
 
   var img=$('chart');
@@ -130,6 +142,58 @@ function renderService(){
     if(!b) return;
     state.period=b.getAttribute('data-p');
     renderService();
+  });
+  renderHourly();
+  bindHourlyFilter();
+}
+
+function renderHourly(){
+  var chart=$('hourly');
+  if(!chart) return;
+  var data=state.hourly&&state.hourly.services?state.hourly.services[SERVICE]:null;
+  var hours=data&&Array.isArray(data.hours)?data.hours:[];
+  var map={};
+  hours.forEach(function(x){map[x.hour]=x;});
+  var n=state.hourFilter;
+  var end=Math.floor(Date.now()/3600000)*3600000;
+  var start=end-(n-1)*3600000;
+  var bars=[],values=[],samples=0,peak=null;
+  for(var i=0;i<n;i++){
+    var t=start+i*3600000,key=new Date(t).toISOString(),item=map[key];
+    var avg=item?item.avg:null,count=item?item.count:0;
+    if(avg!=null){values.push(avg);samples+=count;if(!peak||avg>peak.avg) peak={avg:avg,hour:t};}
+    bars.push({t:t,avg:avg,count:count});
+  }
+  var max=values.length?Math.max.apply(null,values):1;
+  chart.innerHTML=bars.map(function(b){
+    var h=b.avg!=null?Math.max(3,Math.round(b.avg/max*100)):0;
+    var label=new Date(b.t).toLocaleString(undefined,{day:'numeric',month:'short',hour:'numeric'});
+    var title=b.avg!=null?(label+' · '+b.avg+' ms · '+b.count+' sample'+(b.count===1?'':'s')):(label+' · no sample');
+    return '<div class="hb'+(b.avg==null?' miss':'')+'" style="height:'+(b.avg!=null?h:0)+'%" title="'+esc(title)+'" aria-label="'+esc(title)+'"></div>';
+  }).join('');
+  var startLabel=$('hourly-start');
+  if(startLabel) startLabel.textContent=new Date(start).toLocaleString(undefined,{day:'numeric',month:'short',hour:'numeric'});
+  var summary=$('hourly-summary');
+  if(!summary) return;
+  if(!values.length){summary.textContent='No hourly samples yet. The next checks will populate this.';return;}
+  var overall=Math.round(values.reduce(function(a,b){return a+b;},0)/values.length);
+  summary.textContent='Average '+overall+' ms · peak '+peak.avg+' ms at '+new Date(peak.hour).toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})+' · '+samples+' samples';
+}
+
+function bindHourlyFilter(){
+  var seg=document.querySelector('.hourly-seg');
+  if(!seg) return;
+  seg.addEventListener('click',function(e){
+    var b=e.target.closest('button[data-h]');
+    if(!b) return;
+    var value=Number(b.getAttribute('data-h'));
+    if(!value||value===state.hourFilter) return;
+    state.hourFilter=value;
+    renderHourly();
+    var buttons=seg.querySelectorAll('button[data-h]');
+    for(var i=0;i<buttons.length;i++){
+      buttons[i].setAttribute('aria-selected',String(Number(buttons[i].getAttribute('data-h'))===value));
+    }
   });
 }
 
@@ -145,10 +209,12 @@ function load(){
   var histories=Promise.all(slugs.map(function(slug){
     return fetchText(RAW+'history/'+slug+'.yml').then(parseYml).then(function(h){return [slug,h];}).catch(function(){return [slug,null];});
   }));
-  Promise.all([summary,histories]).then(function(res){
+  var hourly=SERVICE?fetchJSON(RAW+'history/hourly.json').catch(function(){return null;}):Promise.resolve(null);
+  Promise.all([summary,histories,hourly]).then(function(res){
     state.summary=res[0];
     state.histories={};
     res[1].forEach(function(pair){state.histories[pair[0]]=pair[1];});
+    state.hourly=res[2];
     var any=res[0]||res[1].some(function(p){return p[1];});
     if(!any){state.error=true;renderError();return;}
     if(SERVICE) renderService(); else renderIndex();

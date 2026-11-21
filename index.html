@@ -266,11 +266,11 @@ function getLastRun(){
   var cached=null;
   try{cached=JSON.parse(localStorage.getItem(RUN_CACHE_KEY)||'null');}catch(e){}
   if(cached&&Date.now()-cached.t<RUN_CACHE_MS) return Promise.resolve(cached.ts);
-  return fetch(API+'/actions/workflows/uptime.yml/runs?per_page=5&exclude_pull_requests=true',{cache:'no-store',headers:{Accept:'application/vnd.github+json'}})
+  return fetch(API+'/actions/runs?per_page=30&exclude_pull_requests=true',{cache:'no-store',headers:{Accept:'application/vnd.github+json'}})
     .then(function(r){if(!r.ok) throw new Error('Runs returned '+r.status);return r.json();})
     .then(function(d){
       var runs=(d&&d.workflow_runs)||[];
-      var done=runs.filter(function(r){return r.status==='completed';})[0];
+      var done=runs.filter(function(r){return r.status==='completed'&&(r.name==='Uptime CI'||r.name==='Response Time CI');})[0];
       var ts=done?new Date(done.updated_at||done.run_started_at).getTime():null;
       if(ts){try{localStorage.setItem(RUN_CACHE_KEY,JSON.stringify({t:Date.now(),ts:ts}));}catch(e){}}
       return ts;
