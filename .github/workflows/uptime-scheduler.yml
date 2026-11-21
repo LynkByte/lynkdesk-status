@@ -45,17 +45,24 @@ jobs:
           case "$ITERATIONS" in (*[!0-9]*|'') ITERATIONS=23 ;; esac
           case "$INTERVAL" in (*[!0-9]*|'') INTERVAL=900 ;; esac
           if [ "$ITERATIONS" -lt 1 ]; then ITERATIONS=23; fi
-          for i in $(seq 1 "$ITERATIONS"); do
+          dispatch() {
+            local event="$1"
+            local code
             code=$(curl -sS -o /tmp/dispatch.json -w '%{http_code}' -X POST \
               -H "Authorization: Bearer $GH_TOKEN" \
               -H "Accept: application/vnd.github+json" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
               "https://api.github.com/repos/$REPO/dispatches" \
-              -d '{"event_type":"uptime"}')
-            echo "check $i/$ITERATIONS -> HTTP $code"
+              -d "{\"event_type\":\"$event\"}")
+            echo "$event -> HTTP $code"
             if [ "$code" != "204" ]; then
               cat /tmp/dispatch.json || true
             fi
+          }
+          for i in $(seq 1 "$ITERATIONS"); do
+            echo "cycle $i/$ITERATIONS at $(date -u +%FT%TZ)"
+            dispatch response_time
+            dispatch hourly_stats
             if [ "$i" -lt "$ITERATIONS" ]; then
               sleep "$INTERVAL"
             fi

@@ -1,0 +1,50 @@
+name: Hourly Stats CI
+
+on:
+  repository_dispatch:
+    types: [hourly_stats]
+  workflow_dispatch:
+  schedule:
+    # Fallback; the uptime scheduler dispatches this every 15 minutes.
+    - cron: "*/15 * * * *"
+
+concurrency:
+  group: lynkbyte-hourly-stats
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update hourly response stats
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT || github.token }}
+
+      - name: Compute hourly averages
+        run: node scripts/hourly-stats.js
+
+      - name: Commit if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- history/hourly.json; then
+            echo "No hourly stats change"
+            exit 0
+          fi
+          git config user.name "Upptime Bot"
+          git config user.email "73812536+upptime-bot@users.noreply.github.com"
+          git add history/hourly.json
+          git commit -m ":bar_chart: Update hourly response stats [skip ci]"
+          for attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            git pull --rebase origin master
+          done
+          echo "::error::Could not push hourly stats after 3 attempts"
+          exit 1
