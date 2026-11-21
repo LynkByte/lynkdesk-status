@@ -71,5 +71,6 @@ const output = {
   services
 };
 
-fs.writeFileSync('history/hourly.json', JSON.stringify(output, null, 2) + '\n');
-console.log(`Wrote history/hourly.json for ${SITES.length} services`);
+fs.mkdirSync('data', { recursive: true });
+fs.writeFileSync('data/hourly.json', JSON.stringify(output, null, 2) + '\n');
+console.log(`Wrote data/hourly.json for ${SITES.length} services`);

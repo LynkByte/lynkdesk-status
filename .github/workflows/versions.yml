@@ -45,7 +45,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -z "$PAYLOAD" ]; then
-            echo "No release payload; leaving history/versions.json unchanged."
+            echo "No release payload; leaving data/versions.json unchanged."
             exit 0
           fi
           node -e '
@@ -58,18 +58,18 @@ jobs:
               "corporate-website": { version: null },
               "database-and-cache": { version: null }
             };
-            fs.writeFileSync("history/versions.json", JSON.stringify(data, null, 2) + "\n");
+            fs.writeFileSync("data/versions.json", JSON.stringify(data, null, 2) + "\n");
           '
 
       - name: Commit if changed
         run: |
           set -euo pipefail
-          if git diff --quiet -- history/versions.json; then
+          if git diff --quiet -- data/versions.json; then
             echo "No version change"
             exit 0
           fi
           git config user.name "Upptime Bot"
           git config user.email "73812536+upptime-bot@users.noreply.github.com"
-          git add history/versions.json
+          git add data/versions.json
           git commit -m ":arrow_up: Update service versions [skip ci]"
           git push

@@ -35,11 +35,11 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
             node scripts/hourly-stats.js
-            if git diff --quiet -- history/hourly.json; then
+            if git diff --quiet -- data/hourly.json; then
               echo "No hourly stats change"
               exit 0
             fi
-            git add history/hourly.json
+            git add data/hourly.json
             git commit -m ":bar_chart: Update hourly response stats [skip ci]"
             if git push; then
               echo "Pushed hourly stats"
