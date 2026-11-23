@@ -12,5 +12,8 @@
   },
   "database-and-cache": {
     "version": null
+  },
+  "scheduler": {
+    "version": null
   }
 }
