@@ -9,7 +9,8 @@ var SITES=[
   {slug:'corporate-website',name:'Corporate website',url:'https://lynkbyte.com'},
   {slug:'web-app',name:'Web app',url:'https://app.lynkbyte.com/up'},
   {slug:'api',name:'API',url:'https://api.lynkbyte.com/api/health'},
-  {slug:'database-and-cache',name:'Database and cache',url:'https://app.lynkbyte.com/health/deep'}
+  {slug:'database-and-cache',name:'Database and cache',url:'https://app.lynkbyte.com/health/deep'},
+  {slug:'scheduler',name:'Scheduler',url:'https://app.lynkbyte.com/health/cron'}
 ];
 var PERIODS=[['day','24 hours'],['week','7 days'],['month','30 days'],['year','1 year'],['all','All time']];
 var LAB={up:'Working',degraded:'Slower than usual',down:'Not working',none:'No data yet'};

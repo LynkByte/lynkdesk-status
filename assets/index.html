@@ -216,11 +216,12 @@ var SITES=[
   {slug:'corporate-website',name:'Corporate website',url:'https://lynkbyte.com'},
   {slug:'web-app',name:'Web app',url:'https://app.lynkbyte.com/up'},
   {slug:'api',name:'API',url:'https://api.lynkbyte.com/api/health'},
-  {slug:'database-and-cache',name:'Database and cache',url:'https://app.lynkbyte.com/health/deep'}
+  {slug:'database-and-cache',name:'Database and cache',url:'https://app.lynkbyte.com/health/deep'},
+  {slug:'scheduler',name:'Scheduler',url:'https://app.lynkbyte.com/health/cron'}
 ];
 
 var DEMO={
-  ok:{hero:['Everything is working.','All four services are responding normally.'],title:null},
+  ok:{hero:['Everything is working.','All services are responding normally.'],title:null},
   deg:{hero:['Some services are slower than usual.','Keep working as normal. Screens may take a little longer to load.'],title:'Some services are slower than usual',who:'Customers using the web app or API',do:'Keep working as normal. Nothing is lost.',we:'We’re watching the affected services and will post an update here.',updates:[['Monitoring','The slow period is easing. We’re keeping an eye on it.','10:42'],['Investigating','Some requests are taking longer than usual.','10:05']]},
   out:{hero:['A service is not working right now.','We are fixing it. Your saved data is safe.'],title:'A service is not working',who:'Anyone using the affected service',do:'Try again in a few minutes. Your saved data is safe.',we:'We found the faulty change and are rolling it back.',updates:[['Identified','The faulty change is found. Rolling back now.','10:31'],['Investigating','Some requests are failing.','10:12']]},
   mnt:{hero:['Planned maintenance is under way.','Some services are briefly unavailable. Your data is safe.'],title:'Database upgrade',who:'The web app and API, for about 30 minutes',do:'If you’re already signed in, you can keep working.',we:'We’re upgrading the database to make everything faster. No data is lost.',updates:[['In progress','Some services are briefly unavailable.','10:00'],['Scheduled','Planned window: 10:00 to 10:30 today.','Announced 17 Nov']]}
