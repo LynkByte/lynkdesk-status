@@ -10,6 +10,8 @@ sites:
     url: https://api.lynkbyte.com/api/health
   - name: Database and cache
     url: https://app.lynkbyte.com/health/deep
+  - name: Scheduler
+    url: https://app.lynkbyte.com/health/cron
 
 status-website:
   cname: status.lynkbyte.com
@@ -19,7 +21,7 @@ status-website:
   faviconSvg: https://status.lynkbyte.com/favicon.svg
   themeUrl: https://status.lynkbyte.com/theme.css
   introTitle: "LynkByte service status"
-  introMessage: "Live availability for the LynkByte website, web app, API and database."
+  introMessage: "Live availability for the LynkByte website, web app, API, database and scheduler."
   navbar:
     - title: LynkByte
       href: https://lynkbyte.com
