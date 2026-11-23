@@ -56,7 +56,8 @@ jobs:
               "web-app": { version: release.version, published_at: release.published_at || null },
               "api": { version: release.version, published_at: release.published_at || null },
               "corporate-website": { version: null },
-              "database-and-cache": { version: null }
+              "database-and-cache": { version: null },
+              "scheduler": { version: null }
             };
             fs.writeFileSync("data/versions.json", JSON.stringify(data, null, 2) + "\n");
           '

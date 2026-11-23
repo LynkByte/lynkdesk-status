@@ -8,7 +8,8 @@ const SITES = [
   'corporate-website',
   'web-app',
   'api',
-  'database-and-cache'
+  'database-and-cache',
+  'scheduler'
 ];
 const WINDOW_HOURS = 24 * 7;
 const REF = process.env.GIT_REF || 'HEAD';
